@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LegalExpress - Tu Abogado a Domicilio</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+        /* Custom utilities */
+        .hidden-section {
+            display: none;
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #f59e0b; /* Amber 500 */
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans min-h-screen flex flex-col">
+
+    <!-- Loading Overlay -->
+    <div id="global-loader" class="hidden-section fixed inset-0 bg-gray-900 bg-opacity-50 z-50 flex items-center justify-center">
+        <div class="bg-white p-5 rounded-lg flex items-center gap-3 shadow-xl">
+            <div class="loader"></div>
+            <span class="font-bold text-gray-700">Procesando...</span>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="bg-slate-900 text-white shadow-lg">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-2 cursor-pointer" onclick="navigateTo('home')">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" />
+                </svg>
+                <span class="text-xl font-bold tracking-wide">Legal<span class="text-amber-500">Express</span></span>
+            </div>
+            <div>
+                <button onclick="navigateTo('home')" class="text-gray-300 hover:text-white transition mr-4">Inicio</button>
+                <button onclick="checkAdminAccess()" class="text-xs bg-slate-800 hover:bg-slate-700 px-3 py-1 rounded border border-slate-700">Acceso Abogado</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Container -->
+    <main class="flex-grow container mx-auto px-4 py-8">
+
+        <!-- SECTION 1: PUBLIC - WELCOME (HOME) -->
+        <div id="view-home" class="fade-in max-w-4xl mx-auto text-center py-12">
+            <h1 class="text-4xl md:text-6xl font-bold text-slate-900 mb-6">Justicia Rápida, <br>Al Alcance de un Clic</h1>
+            <p class="text-xl text-gray-600 mb-8">Conectamos tus problemas legales con soluciones inmediatas. Sin burocracia, directo al punto.</p>
+            
+            <div class="grid md:grid-cols-3 gap-6 mb-12 text-left">
+                <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                    <div class="text-amber-500 text-2xl mb-2">01</div>
+                    <h3 class="font-bold text-lg mb-2">Regístrate</h3>
+                    <p class="text-gray-500 text-sm">Cuéntanos brevemente tu caso en nuestro formulario seguro.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                    <div class="text-amber-500 text-2xl mb-2">02</div>
+                    <h3 class="font-bold text-lg mb-2">Obtén Contacto</h3>
+                    <p class="text-gray-500 text-sm">Recibe inmediatamente el número directo del especialista.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                    <div class="text-amber-500 text-2xl mb-2">03</div>
+                    <h3 class="font-bold text-lg mb-2">Soluciona</h3>
+                    <p class="text-gray-500 text-sm">Asesoría legal personalizada y rápida.</p>
+                </div>
+            </div>
+
+            <button onclick="navigateTo('form')" class="bg-amber-500 hover:bg-amber-600 text-white font-bold py-4 px-10 rounded-full shadow-lg transform transition hover:scale-105 text-lg">
+                Consultar un Abogado Ahora
+            </button>
+        </div>
+
+        <!-- SECTION 2: PUBLIC - FORM -->
+        <div id="view-form" class="hidden-section fade-in max-w-lg mx-auto bg-white p-8 rounded-xl shadow-md border border-gray-100">
+            <div class="mb-6 text-center">
+                <h2 class="text-2xl font-bold text-slate-800">Detalles del Caso</h2>
+                <p class="text-gray-500 text-sm mt-1">La información es confidencial.</p>
+            </div>
+            
+            <form id="clientForm" onsubmit="handleClientSubmit(event)">
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="name">Nombre Completo</label>
+                    <input class="shadow appearance-none border rounded w-full py-3 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-amber-500" id="name" type="text" required placeholder="Ej. Juan Pérez">
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="phone">Teléfono / WhatsApp</label>
+                    <input class="shadow appearance-none border rounded w-full py-3 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-amber-500" id="phone" type="tel" required placeholder="Ej. +51 999 999 999">
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="email">Correo Electrónico (Opcional)</label>
+                    <input class="shadow appearance-none border rounded w-full py-3 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-amber-500" id="email" type="email" placeholder="juan@ejemplo.com">
+                </div>
+
+                <div class="mb-6">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="issue">Describe tu problema legal</label>
+                    <textarea class="shadow appearance-none border rounded w-full py-3 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-amber-500 h-32" id="issue" required placeholder="Ej. Necesito asesoría para un contrato de alquiler..."></textarea>
+                </div>
+
+                <div class="flex items-center justify-between gap-4">
+                    <button type="button" onclick="navigateTo('home')" class="text-gray-500 hover:text-gray-700 font-bold py-2 px-4">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="bg-slate-900 hover:bg-slate-800 text-white font-bold py-3 px-6 rounded focus:outline-none focus:shadow-outline w-full">
+                        Enviar y Ver Teléfono
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- SECTION 3: PUBLIC - SUCCESS -->
+        <div id="view-success" class="hidden-section fade-in max-w-2xl mx-auto text-center pt-10">
+            <div class="bg-green-50 border border-green-200 rounded-xl p-8 shadow-sm">
+                <div class="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                </div>
+                <h2 class="text-3xl font-bold text-slate-800 mb-4">¡Registro Exitoso!</h2>
+                <p class="text-gray-600 mb-6">Hemos recibido tus datos correctamente. Un abogado ha sido notificado de tu caso.</p>
+                
+                <div class="bg-white p-6 rounded-lg border border-gray-300 inline-block mb-6 shadow-inner">
+                    <p class="text-sm text-gray-500 uppercase tracking-wide font-bold mb-2">Comunícate ahora con el Dr. asignado:</p>
+                    <p class="text-4xl font-bold text-slate-900 tracking-wider select-all" id="lawyer-contact-number">+51 987 654 321</p>
+                    <p class="text-xs text-gray-400 mt-2">Menciona tu código de caso: <span id="case-code" class="font-mono text-slate-800 font-bold">#000</span></p>
+                </div>
+
+                <div>
+                    <a id="whatsapp-link" href="#" target="_blank" class="inline-flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-full transition">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-8.683-2.031-.967-.272-.297-.471-.421-.919-.421-.446 0-.768.099-1.164.521-.396.422-1.511 1.486-1.511 3.625 0 2.139 1.56 4.207 1.783 4.505.223.297 3.07 4.689 7.439 6.576 2.586 1.117 3.114.894 3.66.842.545-.05 1.758-.718 2.006-1.412.248-.695.248-1.29.173-1.414z"/></svg>
+                        Contactar por WhatsApp
+                    </a>
+                </div>
+                <button onclick="navigateTo('home')" class="mt-8 text-amber-600 underline hover:text-amber-700">Volver al Inicio</button>
+            </div>
+        </div>
+
+        <!-- SECTION 4: ADMIN - DASHBOARD -->
+        <div id="view-admin" class="hidden-section fade-in">
+            <div class="flex justify-between items-center mb-6 border-b pb-4">
+                <div>
+                    <h2 class="text-2xl font-bold text-slate-900">Panel de Abogado</h2>
+                    <div class="flex items-center gap-2 mt-1">
+                        <p class="text-gray-500 text-sm">Gestión de casos entrantes</p>
+                        <!-- DB Status Indicator -->
+                        <span id="db-status" class="px-2 py-0.5 rounded text-xs font-bold bg-gray-200 text-gray-600">Local</span>
+                    </div>
+                </div>
+                <div class="flex gap-3">
+                    <button onclick="downloadExcel()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                        </svg>
+                        Descargar Excel
+                    </button>
+                    <button onclick="logout()" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded">Salir</button>
+                </div>
+            </div>
+
+            <!-- Stats -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                <div class="bg-white p-4 rounded shadow border-l-4 border-slate-800">
+                    <p class="text-gray-500 text-xs uppercase font-bold">Total Casos</p>
+                    <p class="text-2xl font-bold" id="stat-total">0</p>
+                </div>
+                <div class="bg-white p-4 rounded shadow border-l-4 border-amber-500">
+                    <p class="text-gray-500 text-xs uppercase font-bold">Hoy</p>
+                    <p class="text-2xl font-bold" id="stat-today">0</p>
+                </div>
+            </div>
+
+            <!-- Table -->
+            <div class="bg-white rounded-lg shadow overflow-x-auto">
+                <table class="min-w-full leading-normal">
+                    <thead>
+                        <tr>
+                            <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Fecha</th>
+                            <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Código</th>
+                            <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Cliente</th>
+                            <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Contacto</th>
+                            <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Caso</th>
+                            <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cases-table-body">
+                        <!-- JS populates this -->
+                        <tr>
+                            <td colspan="6" class="px-5 py-5 border-b border-gray-200 bg-white text-sm text-center text-gray-500">Cargando datos...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="bg-slate-900 text-slate-400 py-6 mt-auto text-center text-sm">
+        <div class="container mx-auto px-4">
+            <p>© 2023 LegalExpress. Todos los derechos reservados.</p>
+            <p class="mt-2 text-xs text-slate-600">Plataforma de gestión de servicios legales.</p>
+        </div>
+    </footer>
+
+    <!-- LOGIC -->
+    <script>
+        // --- CONFIGURATION ---
+        const LAWYER_PHONE = "+51 987654321"; 
+        const LAWYER_WHATSAPP = "51987654321"; 
+        const ADMIN_PASSWORD = "admin"; 
+
+        // --- MONGODB CLOUD CONFIGURATION (ATLAS DATA API) ---
+        // PARA ACTIVAR MONGO: 
+        // 1. Ve a MongoDB Atlas > Data API > Enable
+        // 2. Crea una API Key
+        // 3. Copia la URL Endpoint y la API Key aquí abajo.
+        // 4. Asegúrate que Database = 'legal_express' y Collection = 'cases' existan (o deja que Mongo las cree si la config lo permite).
+        
+        const MONGO_CONFIG = {
+            apiKey: '', // <-- PEGA TU API KEY AQUÍ (Ej: 'sF3d...')
+            endpoint: '', // <-- PEGA TU ENDPOINT AQUÍ (Ej: 'https://.../action')
+            dataSource: 'Cluster0', // Nombre de tu cluster en Atlas
+            database: 'legal_express',
+            collection: 'cases'
+        };
+
+        // --- DATABASE ADAPTER ---
+        // This handles switching between LocalStorage (Default) and MongoDB (Cloud)
+        const DB = {
+            // Check if Cloud is configured
+            isCloudEnabled: () => {
+                return MONGO_CONFIG.apiKey.length > 5 && MONGO_CONFIG.endpoint.length > 5;
+            },
+
+            // Fetch All Cases
+            getAll: async () => {
+                toggleLoader(true);
+                try {
+                    if (DB.isCloudEnabled()) {
+                        // CLOUD MODE: Fetch from MongoDB
+                        const response = await fetch(`${MONGO_CONFIG.endpoint}/find`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Access-Control-Request-Headers': '*',
+                                'api-key': MONGO_CONFIG.apiKey,
+                            },
+                            body: JSON.stringify({
+                                dataSource: MONGO_CONFIG.dataSource,
+                                database: MONGO_CONFIG.database,
+                                collection: MONGO_CONFIG.collection,
+                                filter: {}, // Get all
+                                sort: { timestamp: -1 }
+                            })
+                        });
+                        const data = await response.json();
+                        return data.documents || [];
+                    } else {
+                        // LOCAL MODE: Fetch from LocalStorage
+                        // Simulate delay for UI consistency
+                        await new Promise(r => setTimeout(r, 300));
+                        return JSON.parse(localStorage.getItem('legal_cases')) || [];
+                    }
+                } catch (error) {
+                    console.error("DB Error:", error);
+                    alert("Error al conectar con la base de datos. Ver consola.");
+                    return [];
+                } finally {
+                    toggleLoader(false);
+                }
+            },
+
+            // Save New Case
+            save: async (caseData) => {
+                toggleLoader(true);
+                try {
+                    if (DB.isCloudEnabled()) {
+                        // CLOUD MODE: Insert into MongoDB
+                        await fetch(`${MONGO_CONFIG.endpoint}/insertOne`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Access-Control-Request-Headers': '*',
+                                'api-key': MONGO_CONFIG.apiKey,
+                            },
+                            body: JSON.stringify({
+                                dataSource: MONGO_CONFIG.dataSource,
+                                database: MONGO_CONFIG.database,
+                                collection: MONGO_CONFIG.collection,
+                                document: caseData
+                            })
+                        });
+                        // Also save to local as backup/cache if needed, but for now we trust cloud
+                    } else {
+                        // LOCAL MODE
+                        const cases = JSON.parse(localStorage.getItem('legal_cases')) || [];
+                        cases.push(caseData);
+                        localStorage.setItem('legal_cases', JSON.stringify(cases));
+                        await new Promise(r => setTimeout(r, 500)); // Fake network delay
+                    }
+                    return true;
+                } catch (error) {
+                    console.error("DB Save Error:", error);
+                    alert("Hubo un error al guardar los datos.");
+                    return false;
+                } finally {
+                    toggleLoader(false);
+                }
+            },
+
+            // Delete Case (Optional for this demo)
+            delete: async (id) => {
+                toggleLoader(true);
+                try {
+                    if (DB.isCloudEnabled()) {
+                        // Cloud Delete
+                        await fetch(`${MONGO_CONFIG.endpoint}/deleteOne`, {
+                             method: 'POST',
+                             headers: {
+                                'Content-Type': 'application/json',
+                                'Access-Control-Request-Headers': '*',
+                                'api-key': MONGO_CONFIG.apiKey,
+                            },
+                            body: JSON.stringify({
+                                dataSource: MONGO_CONFIG.dataSource,
+                                database: MONGO_CONFIG.database,
+                                collection: MONGO_CONFIG.collection,
+                                filter: { id: id }
+                            })
+                        });
+                    } else {
+                        // Local Delete
+                        let cases = JSON.parse(localStorage.getItem('legal_cases')) || [];
+                        cases = cases.filter(c => c.id !== id);
+                        localStorage.setItem('legal_cases', JSON.stringify(cases));
+                    }
+                    return true;
+                } catch (e) {
+                    console.error(e);
+                    return false;
+                } finally {
+                    toggleLoader(false);
+                }
+            }
+        };
+
+        // --- UI HELPERS ---
+        function toggleLoader(show) {
+            const loader = document.getElementById('global-loader');
+            if(show) loader.classList.remove('hidden-section');
+            else loader.classList.add('hidden-section');
+        }
+
+        // --- NAVIGATION ---
+        function navigateTo(viewName) {
+            document.querySelectorAll('[id^="view-"]').forEach(el => el.classList.add('hidden-section'));
+            const target = document.getElementById(`view-${viewName}`);
+            if (target) {
+                target.classList.remove('hidden-section');
+                window.scrollTo(0, 0);
+            }
+
+            if(viewName === 'admin') {
+                renderAdminTable();
+            }
+        }
+
+        // --- PUBLIC FUNCTIONS ---
+        async function handleClientSubmit(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('name').value;
+            const phone = document.getElementById('phone').value;
+            const email = document.getElementById('email').value;
+            const issue = document.getElementById('issue').value;
+            
+            const newCase = {
+                id: Date.now(), // Simple ID
+                code: 'CAS-' + Math.floor(1000 + Math.random() * 9000),
+                date: new Date().toLocaleString(),
+                timestamp: Date.now(),
+                name,
+                phone,
+                email,
+                issue,
+                status: 'Nuevo'
+            };
+
+            // Save via DB Adapter
+            const success = await DB.save(newCase);
+
+            if (success) {
+                document.getElementById('case-code').innerText = newCase.code;
+                document.getElementById('lawyer-contact-number').innerText = LAWYER_PHONE;
+                document.getElementById('whatsapp-link').href = `https://wa.me/${LAWYER_WHATSAPP}?text=Hola, soy ${encodeURIComponent(name)}. Tengo el caso ${newCase.code}: ${encodeURIComponent(issue.substring(0, 50))}...`;
+                
+                document.getElementById('clientForm').reset();
+                navigateTo('success');
+            }
+        }
+
+        // --- ADMIN FUNCTIONS ---
+        function checkAdminAccess() {
+            const input = prompt("Ingrese contraseña de administrador:");
+            if (input === ADMIN_PASSWORD) {
+                navigateTo('admin');
+            } else if (input !== null) {
+                alert("Contraseña incorrecta");
+            }
+        }
+
+        function logout() {
+            navigateTo('home');
+        }
+
+        async function renderAdminTable() {
+            const tbody = document.getElementById('cases-table-body');
+            const statTotal = document.getElementById('stat-total');
+            const statToday = document.getElementById('stat-today');
+            const statusLabel = document.getElementById('db-status');
+
+            // Update Status Label
+            if(DB.isCloudEnabled()) {
+                statusLabel.innerText = "Nube (MongoDB)";
+                statusLabel.className = "px-2 py-0.5 rounded text-xs font-bold bg-green-100 text-green-800 border border-green-200";
+            } else {
+                statusLabel.innerText = "Local (Solo este PC)";
+                statusLabel.className = "px-2 py-0.5 rounded text-xs font-bold bg-gray-200 text-gray-600 border border-gray-300";
+            }
+
+            // Get Data
+            const cases = await DB.getAll();
+
+            // Update Stats
+            statTotal.innerText = cases.length;
+            const today = new Date().toLocaleDateString();
+            const todayCount = cases.filter(c => new Date(c.timestamp).toLocaleDateString() === today).length;
+            statToday.innerText = todayCount;
+
+            // Clear table
+            tbody.innerHTML = '';
+
+            if (cases.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="px-5 py-5 border-b border-gray-200 bg-white text-sm text-center text-gray-500">No hay casos registrados aún.</td></tr>`;
+                return;
+            }
+
+            // Sort desc
+            const sortedCases = [...cases].sort((a, b) => b.timestamp - a.timestamp);
+
+            sortedCases.forEach(c => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                        <p class="text-gray-900 whitespace-no-wrap">${c.date}</p>
+                    </td>
+                    <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                        <span class="bg-gray-200 text-gray-800 py-1 px-2 rounded-full text-xs font-bold font-mono">${c.code}</span>
+                    </td>
+                    <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                        <p class="text-gray-900 whitespace-no-wrap font-semibold">${c.name}</p>
+                        <p class="text-gray-600 text-xs">${c.email || ''}</p>
+                    </td>
+                    <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                        <p class="text-gray-900 whitespace-no-wrap">${c.phone}</p>
+                        <a href="tel:${c.phone}" class="text-amber-600 hover:underline text-xs">Llamar</a>
+                    </td>
+                    <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                        <p class="text-gray-900 whitespace-no-wrap truncate max-w-xs" title="${c.issue}">${c.issue}</p>
+                    </td>
+                    <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                        <button onclick="deleteCase(${c.id})" class="text-red-600 hover:text-red-900">Eliminar</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        async function deleteCase(id) {
+            if(confirm('¿Seguro que desea eliminar este registro?')) {
+                await DB.delete(id);
+                renderAdminTable();
+            }
+        }
+
+        async function downloadExcel() {
+            const cases = await DB.getAll();
+            
+            if (cases.length === 0) {
+                alert("No hay datos para exportar.");
+                return;
+            }
+
+            // CSV Header
+            let csvContent = "data:text/csv;charset=utf-8,";
+            csvContent += "ID,Codigo,Fecha,Nombre,Telefono,Email,Problema\n";
+
+            // CSV Rows
+            cases.forEach(c => {
+                const safeIssue = `"${(c.issue || '').replace(/"/g, '""').replace(/\n/g, ' ')}"`; 
+                const row = [
+                    c.id,
+                    c.code,
+                    `"${c.date}"`,
+                    `"${c.name}"`,
+                    `"${c.phone}"`,
+                    `"${c.email}"`,
+                    safeIssue
+                ].join(",");
+                csvContent += row + "\n";
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "casos_legales.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Initialize
+        navigateTo('home'); 
+    </script>
+</body>
+</html>
