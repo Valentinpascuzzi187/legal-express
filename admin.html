@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administración - Acceso Penalista</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
+        }
+        
+        #loginSection {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        #dashboardSection {
+            display: none;
+        }
+        
+        .case-card {
+            transition: all 0.3s ease;
+        }
+        
+        .case-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+        
+        .badge {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-weight: 600;
+        }
+        
+        .badge-penal { background: #ef4444; color: white; }
+        .badge-civil { background: #3b82f6; color: white; }
+        .badge-laboral { background: #f59e0b; color: white; }
+        .badge-familiar { background: #ec4899; color: white; }
+        .badge-comercial { background: #10b981; color: white; }
+        .badge-otro { background: #6b7280; color: white; }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <!-- Login Section -->
+    <section id="loginSection" class="gradient-bg">
+        <div class="bg-white p-10 rounded-xl shadow-2xl max-w-md w-full mx-4">
+            <div class="text-center mb-8">
+                <i class="fas fa-shield-alt text-6xl text-gray-700 mb-4"></i>
+                <h1 class="text-3xl font-bold text-gray-800">Acceso Penalista</h1>
+                <p class="text-gray-600 mt-2">Panel de Administración Seguro</p>
+            </div>
+            
+            <form id="loginForm">
+                <div class="mb-6">
+                    <label class="block text-gray-700 font-semibold mb-2">
+                        <i class="fas fa-user mr-2"></i>Usuario
+                    </label>
+                    <input type="text" id="username" required
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-600">
+                </div>
+                
+                <div class="mb-6">
+                    <label class="block text-gray-700 font-semibold mb-2">
+                        <i class="fas fa-lock mr-2"></i>Contraseña
+                    </label>
+                    <input type="password" id="password" required
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-600">
+                </div>
+                
+                <div id="loginError" class="hidden mb-4 p-3 bg-red-100 text-red-700 rounded-lg text-sm">
+                    <i class="fas fa-exclamation-circle mr-2"></i>Credenciales incorrectas
+                </div>
+                
+                <button type="submit" 
+                    class="w-full bg-gray-800 text-white py-3 rounded-lg font-bold hover:bg-gray-900 transition">
+                    <i class="fas fa-sign-in-alt mr-2"></i>Iniciar Sesión
+                </button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Dashboard Section -->
+    <section id="dashboardSection">
+        <!-- Header -->
+        <header class="gradient-bg text-white shadow-lg">
+            <div class="container mx-auto px-4 py-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                        <i class="fas fa-shield-alt text-3xl"></i>
+                        <div>
+                            <h1 class="text-2xl font-bold">Panel de Administración</h1>
+                            <p class="text-gray-300 text-sm">Gestión de Consultas Legales</p>
+                        </div>
+                    </div>
+                    <button onclick="logout()" class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg transition">
+                        <i class="fas fa-sign-out-alt mr-2"></i>Cerrar Sesión
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Stats Cards -->
+        <div class="container mx-auto px-4 py-8">
+            <div class="grid md:grid-cols-4 gap-6 mb-8">
+                <div class="bg-white p-6 rounded-lg shadow-lg">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-600 text-sm font-semibold">Total Consultas</p>
+                            <p id="totalCasos" class="text-3xl font-bold text-gray-800">0</p>
+                        </div>
+                        <i class="fas fa-folder text-4xl text-blue-600"></i>
+                    </div>
+                </div>
+                
+                <div class="bg-white p-6 rounded-lg shadow-lg">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-600 text-sm font-semibold">Casos Penales</p>
+                            <p id="casosPenales" class="text-3xl font-bold text-red-600">0</p>
+                        </div>
+                        <i class="fas fa-gavel text-4xl text-red-600"></i>
+                    </div>
+                </div>
+                
+                <div class="bg-white p-6 rounded-lg shadow-lg">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-600 text-sm font-semibold">Casos Civiles</p>
+                            <p id="casosCiviles" class="text-3xl font-bold text-blue-600">0</p>
+                        </div>
+                        <i class="fas fa-home text-4xl text-blue-600"></i>
+                    </div>
+                </div>
+                
+                <div class="bg-white p-6 rounded-lg shadow-lg">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-600 text-sm font-semibold">Casos Laborales</p>
+                            <p id="casosLaborales" class="text-3xl font-bold text-orange-600">0</p>
+                        </div>
+                        <i class="fas fa-briefcase text-4xl text-orange-600"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filter and Export -->
+            <div class="bg-white p-6 rounded-lg shadow-lg mb-6">
+                <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                    <div class="flex items-center gap-4">
+                        <label class="font-semibold text-gray-700">Filtrar por tipo:</label>
+                        <select id="filterTipo" onchange="filterCases()"
+                            class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-600">
+                            <option value="Todos">Todos</option>
+                            <option value="Penal">Penal</option>
+                            <option value="Civil">Civil</option>
+                            <option value="Laboral">Laboral</option>
+                            <option value="Familiar">Familiar</option>
+                            <option value="Comercial">Comercial</option>
+                            <option value="Otro">Otro</option>
+                        </select>
+                    </div>
+                    
+                    <div class="flex gap-3">
+                        <button onclick="exportToExcel()" 
+                            class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-semibold transition">
+                            <i class="fas fa-file-excel mr-2"></i>Exportar a Excel
+                        </button>
+                        <button onclick="refreshData()" 
+                            class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-semibold transition">
+                            <i class="fas fa-sync-alt mr-2"></i>Actualizar
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cases Grid -->
+            <div id="casosContainer" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Cases will be loaded here -->
+            </div>
+
+            <!-- Empty State -->
+            <div id="emptyState" class="hidden text-center py-16">
+                <i class="fas fa-inbox text-6xl text-gray-300 mb-4"></i>
+                <p class="text-xl text-gray-500">No hay consultas registradas</p>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        let allCases = [];
+        let filteredCases = [];
+
+        // Login
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            if (username === 'penalistaUser_#$"!"' && password === 'H@lcon271650//#') {
+                document.getElementById('loginSection').style.display = 'none';
+                document.getElementById('dashboardSection').style.display = 'block';
+                sessionStorage.setItem('adminLoggedIn', 'true');
+                loadCases();
+            } else {
+                document.getElementById('loginError').classList.remove('hidden');
+                setTimeout(() => {
+                    document.getElementById('loginError').classList.add('hidden');
+                }, 3000);
+            }
+        });
+
+        // Logout
+        function logout() {
+            sessionStorage.removeItem('adminLoggedIn');
+            document.getElementById('loginSection').style.display = 'flex';
+            document.getElementById('dashboardSection').style.display = 'none';
+            document.getElementById('loginForm').reset();
+        }
+
+        // Check if already logged in
+        if (sessionStorage.getItem('adminLoggedIn') === 'true') {
+            document.getElementById('loginSection').style.display = 'none';
+            document.getElementById('dashboardSection').style.display = 'block';
+            loadCases();
+        }
+
+        // Load cases from server
+        async function loadCases() {
+            try {
+                const response = await fetch('/api/consultas');
+                if (response.ok) {
+                    allCases = await response.json();
+                    filteredCases = [...allCases];
+                    displayCases();
+                    updateStats();
+                }
+            } catch (error) {
+                console.error('Error loading cases:', error);
+            }
+        }
+
+        // Display cases
+        function displayCases() {
+            const container = document.getElementById('casosContainer');
+            const emptyState = document.getElementById('emptyState');
+            
+            if (filteredCases.length === 0) {
+                container.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            }
+            
+            emptyState.classList.add('hidden');
+            
+            container.innerHTML = filteredCases.map((caso, index) => `
+                <div class="case-card bg-white p-6 rounded-lg shadow-lg">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <span class="badge badge-${caso.tipoCaso.toLowerCase()}">${caso.tipoCaso}</span>
+                        </div>
+                        <span class="text-xs text-gray-500">#${caso.id || index + 1}</span>
+                    </div>
+                    
+                    <h3 class="text-xl font-bold text-gray-800 mb-3">
+                        <i class="fas fa-user mr-2 text-blue-600"></i>${caso.nombre}
+                    </h3>
+                    
+                    <div class="space-y-2 mb-4">
+                        <p class="text-sm text-gray-600">
+                            <i class="fas fa-envelope mr-2 text-gray-400"></i>${caso.email}
+                        </p>
+                        <p class="text-sm text-gray-600">
+                            <i class="fas fa-phone mr-2 text-gray-400"></i>${caso.numero}
+                        </p>
+                        <p class="text-sm text-gray-600">
+                            <i class="fas fa-calendar mr-2 text-gray-400"></i>${caso.fecha}
+                        </p>
+                    </div>
+                    
+                    <div class="bg-gray-50 p-4 rounded-lg mb-4">
+                        <p class="text-sm font-semibold text-gray-700 mb-2">
+                            <i class="fas fa-comment-dots mr-2"></i>Consulta:
+                        </p>
+                        <p class="text-sm text-gray-600">${caso.consulta}</p>
+                    </div>
+                    
+                    <div class="flex gap-2">
+                        <a href="https://wa.me/${caso.numero.replace(/[^0-9]/g, '')}" target="_blank"
+                            class="flex-1 bg-green-600 hover:bg-green-700 text-white text-center py-2 rounded-lg text-sm font-semibold transition">
+                            <i class="fab fa-whatsapp mr-1"></i>WhatsApp
+                        </a>
+                        <a href="mailto:${caso.email}"
+                            class="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-center py-2 rounded-lg text-sm font-semibold transition">
+                            <i class="fas fa-envelope mr-1"></i>Email
+                        </a>
+                        <button onclick="deleteCase(${caso.id || index})"
+                            class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Update statistics
+        function updateStats() {
+            document.getElementById('totalCasos').textContent = allCases.length;
+            document.getElementById('casosPenales').textContent = allCases.filter(c => c.tipoCaso === 'Penal').length;
+            document.getElementById('casosCiviles').textContent = allCases.filter(c => c.tipoCaso === 'Civil').length;
+            document.getElementById('casosLaborales').textContent = allCases.filter(c => c.tipoCaso === 'Laboral').length;
+        }
+
+        // Filter cases
+        function filterCases() {
+            const filterValue = document.getElementById('filterTipo').value;
+            
+            if (filterValue === 'Todos') {
+                filteredCases = [...allCases];
+            } else {
+                filteredCases = allCases.filter(caso => caso.tipoCaso === filterValue);
+            }
+            
+            displayCases();
+        }
+
+        // Export to Excel
+        function exportToExcel() {
+            if (allCases.length === 0) {
+                alert('No hay datos para exportar');
+                return;
+            }
+
+            const data = allCases.map((caso, index) => ({
+                'N°': caso.id || index + 1,
+                'Nombre': caso.nombre,
+                'Email': caso.email,
+                'Teléfono': caso.numero,
+                'Tipo de Caso': caso.tipoCaso,
+                'Consulta': caso.consulta,
+                'Fecha': caso.fecha
+            }));
+
+            const ws = XLSX.utils.json_to_sheet(data);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Consultas');
+            
+            // Auto-width columns
+            const maxWidth = data.reduce((w, r) => Math.max(w, r.Consulta.length), 10);
+            ws['!cols'] = [
+                { wch: 5 },
+                { wch: 25 },
+                { wch: 30 },
+                { wch: 20 },
+                { wch: 15 },
+                { wch: Math.min(maxWidth, 50) },
+                { wch: 20 }
+            ];
+
+            const fileName = `Consultas_Legales_${new Date().toLocaleDateString('es-AR').replace(/\//g, '-')}.xlsx`;
+            XLSX.writeFile(wb, fileName);
+        }
+
+        // Refresh data
+        function refreshData() {
+            loadCases();
+        }
+
+        // Delete case
+        async function deleteCase(id) {
+            if (!confirm('¿Estás seguro de eliminar esta consulta?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/consulta/${id}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    loadCases();
+                } else {
+                    alert('Error al eliminar la consulta');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error de conexión');
+            }
+        }
+    </script>
+</body>
+</html>

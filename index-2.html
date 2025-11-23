@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dr. Cejas Nazareno - Abogado Penalista</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Poppins:wght@300;400;600&display=swap');
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        h1, h2, h3 {
+            font-family: 'Playfair Display', serif;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+        }
+        
+        .card-hover {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .animate-fade-in {
+            animation: fadeIn 1s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .success-message {
+            display: none;
+            animation: slideDown 0.5s ease-out;
+        }
+        
+        @keyframes slideDown {
+            from { transform: translateY(-100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="gradient-bg text-white shadow-lg">
+        <div class="container mx-auto px-4 py-6">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <i class="fas fa-balance-scale text-4xl"></i>
+                    <div>
+                        <h1 class="text-3xl font-bold">Dr. Cejas Nazareno</h1>
+                        <p class="text-blue-200 text-sm">Abogado Penalista - Su defensa legal</p>
+                    </div>
+                </div>
+                <div class="hidden md:flex space-x-6">
+                    <a href="#servicios" class="hover:text-blue-200 transition"><i class="fas fa-briefcase mr-2"></i>Servicios</a>
+                    <a href="#contacto" class="hover:text-blue-200 transition"><i class="fas fa-envelope mr-2"></i>Contacto</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Success Message -->
+    <div id="successMessage" class="success-message fixed top-20 left-1/2 transform -translate-x-1/2 z-50 bg-green-500 text-white px-8 py-4 rounded-lg shadow-2xl">
+        <div class="flex items-center space-x-3">
+            <i class="fas fa-check-circle text-2xl"></i>
+            <div>
+                <p class="font-bold">¡Consulta enviada con éxito!</p>
+                <p class="text-sm">Nos pondremos en contacto pronto</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="gradient-bg text-white py-20 animate-fade-in">
+        <div class="container mx-auto px-4 text-center">
+            <h2 class="text-5xl font-bold mb-6">Su Abogado Penalista de Confianza</h2>
+            <p class="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
+                Defensa penal especializada con la experiencia y dedicación que su caso merece
+            </p>
+            <a href="#contacto" class="bg-white text-blue-900 px-8 py-4 rounded-full font-semibold hover:bg-blue-50 transition inline-block">
+                <i class="fas fa-paper-plane mr-2"></i>Consulta Ahora
+            </a>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="servicios" class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <h2 class="text-4xl font-bold text-center text-gray-800 mb-12">Áreas de Práctica</h2>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="card-hover bg-white p-6 rounded-lg shadow-lg border-t-4 border-blue-600">
+                    <i class="fas fa-gavel text-5xl text-blue-600 mb-4"></i>
+                    <h3 class="text-2xl font-bold mb-3">Derecho Penal</h3>
+                    <p class="text-gray-600">Defensa penal experta en todo tipo de casos criminales</p>
+                </div>
+                <div class="card-hover bg-white p-6 rounded-lg shadow-lg border-t-4 border-blue-600">
+                    <i class="fas fa-home text-5xl text-blue-600 mb-4"></i>
+                    <h3 class="text-2xl font-bold mb-3">Derecho Civil</h3>
+                    <p class="text-gray-600">Contratos, sucesiones y litigios civiles</p>
+                </div>
+                <div class="card-hover bg-white p-6 rounded-lg shadow-lg border-t-4 border-blue-600">
+                    <i class="fas fa-briefcase text-5xl text-blue-600 mb-4"></i>
+                    <h3 class="text-2xl font-bold mb-3">Derecho Laboral</h3>
+                    <p class="text-gray-600">Protección de derechos laborales y despidos</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Form Section -->
+    <section id="contacto" class="py-16 bg-gray-100">
+        <div class="container mx-auto px-4 max-w-2xl">
+            <h2 class="text-4xl font-bold text-center text-gray-800 mb-4">Solicita tu Consulta</h2>
+            <p class="text-center text-gray-600 mb-8">Completa el formulario y te contactaremos a la brevedad</p>
+            
+            <form id="consultaForm" class="bg-white p-8 rounded-lg shadow-xl">
+                <div class="mb-6">
+                    <label class="block text-gray-700 font-semibold mb-2">
+                        <i class="fas fa-user mr-2 text-blue-600"></i>Nombre Completo
+                    </label>
+                    <input type="text" id="nombre" required
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder="Ej: Juan Pérez">
+                </div>
+
+                <div class="mb-6">
+                    <label class="block text-gray-700 font-semibold mb-2">
+                        <i class="fas fa-envelope mr-2 text-blue-600"></i>Email
+                    </label>
+                    <input type="email" id="email" required
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder="ejemplo@email.com">
+                </div>
+
+                <div class="mb-6">
+                    <label class="block text-gray-700 font-semibold mb-2">
+                        <i class="fas fa-phone mr-2 text-blue-600"></i>Número de Teléfono
+                    </label>
+                    <input type="tel" id="numero" required
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder="+54 11 1234-5678">
+                </div>
+
+                <div class="mb-6">
+                    <label class="block text-gray-700 font-semibold mb-2">
+                        <i class="fas fa-list mr-2 text-blue-600"></i>Tipo de Caso
+                    </label>
+                    <select id="tipoCaso" required
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">Selecciona una opción</option>
+                        <option value="Penal">Derecho Penal</option>
+                        <option value="Civil">Derecho Civil</option>
+                        <option value="Laboral">Derecho Laboral</option>
+                        <option value="Familiar">Derecho Familiar</option>
+                        <option value="Comercial">Derecho Comercial</option>
+                        <option value="Otro">Otro</option>
+                    </select>
+                </div>
+
+                <div class="mb-6">
+                    <label class="block text-gray-700 font-semibold mb-2">
+                        <i class="fas fa-comment mr-2 text-blue-600"></i>Consulta / Observación
+                    </label>
+                    <textarea id="consulta" required rows="5"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder="Describe tu situación legal..."></textarea>
+                </div>
+
+                <button type="submit" 
+                    class="w-full bg-blue-600 text-white py-4 rounded-lg font-bold text-lg hover:bg-blue-700 transition shadow-lg">
+                    <i class="fas fa-paper-plane mr-2"></i>Enviar Consulta
+                </button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="gradient-bg text-white py-8">
+        <div class="container mx-auto px-4 text-center">
+            <div class="mb-4">
+                <a href="https://wa.me/5491134691074" target="_blank" 
+                    class="inline-block bg-green-500 hover:bg-green-600 px-8 py-3 rounded-full font-semibold transition">
+                    <i class="fab fa-whatsapp mr-2 text-xl"></i>Contactar por WhatsApp
+                </a>
+            </div>
+            <p class="text-blue-200">&copy; 2024 Dr. Cejas Nazareno - Abogado Penalista. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.getElementById('consultaForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const formData = {
+                nombre: document.getElementById('nombre').value,
+                email: document.getElementById('email').value,
+                numero: document.getElementById('numero').value,
+                tipoCaso: document.getElementById('tipoCaso').value,
+                consulta: document.getElementById('consulta').value,
+                fecha: new Date().toLocaleString('es-AR')
+            };
+
+            try {
+                const response = await fetch('/api/consulta', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                if (response.ok) {
+                    // Mostrar mensaje de éxito
+                    const successMsg = document.getElementById('successMessage');
+                    successMsg.style.display = 'block';
+                    
+                    // Limpiar formulario
+                    document.getElementById('consultaForm').reset();
+
+                    // Ocultar mensaje después de 5 segundos
+                    setTimeout(() => {
+                        successMsg.style.display = 'none';
+                    }, 5000);
+
+                    // Redireccionar a WhatsApp después de 2 segundos
+                    setTimeout(() => {
+                        window.open('https://wa.me/5491134691074?text=Hola%20Dr.%20Cejas,%20acabo%20de%20enviar%20una%20consulta%20desde%20la%20web', '_blank');
+                    }, 2000);
+                } else {
+                    alert('Error al enviar la consulta. Por favor, intenta nuevamente.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error de conexión. Por favor, intenta nuevamente.');
+            }
+        });
+
+        // Smooth scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
